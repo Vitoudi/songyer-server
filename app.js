@@ -1,6 +1,6 @@
 const app = require("express")();
 const https = require("https").createServer(app);
-const PORT = 8080;
+const PORT = 80;
 
 const { RoomManager, RoomHandler } = require("./classes/Rooms");
 const { UserManager, UserHandler } = require("./classes/User");
