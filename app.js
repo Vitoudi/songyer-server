@@ -1,6 +1,6 @@
 const app = require("express")();
 const https = require("https").createServer(app);
-const PORT = 80;
+const PORT = process.env.PORT || 8080;
 
 const { RoomManager, RoomHandler } = require("./classes/Rooms");
 const { UserManager, UserHandler } = require("./classes/User");
@@ -17,8 +17,6 @@ const io = require("socket.io")(https, {
     methods: ["GET", "POST"],
   },
 });
-
-
 
 io.of('/').on("connection", (socket) => {
   const handlerOptions = { socket, io };
