@@ -13,7 +13,7 @@ const roomManager = new RoomManager();
 
 const io = require("socket.io")(http, {
   cors: {
-    origin: "https://songyer.herokuapp.com",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
