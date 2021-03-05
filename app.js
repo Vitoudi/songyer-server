@@ -1,5 +1,5 @@
 const app = require("express")();
-const https = require("https").createServer(app);
+const http = require("http").createServer(app);
 const PORT = process.env.PORT || 8080;
 
 const { RoomManager, RoomHandler } = require("./classes/Rooms");
@@ -11,7 +11,7 @@ const { RequestHandler } = require("./classes/Requester");
 const userManager = new UserManager();
 const roomManager = new RoomManager();
 
-const io = require("socket.io")(https, {
+const io = require("socket.io")(http, {
   cors: {
     origin: "https://songyer.herokuapp.com",
     methods: ["GET", "POST"],
@@ -91,7 +91,7 @@ io.of('/').on("connection", (socket) => {
 
 io.of("/room").on("connection", (socket) => {});
 
-https.listen(PORT, () => {
+http.listen(PORT, () => {
   console.log("listening in port " + PORT);
 });
 
