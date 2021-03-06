@@ -89,8 +89,6 @@ io.of('/').on("connection", (socket) => {
   })
 });
 
-io.of("/room").on("connection", (socket) => {});
-
 http.listen(PORT, () => {
   console.log("listening in port " + PORT);
 });
