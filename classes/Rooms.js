@@ -36,6 +36,14 @@ class RoomManager {
     return newRoom;
   }
 
+  removeRoom(roomId) {
+    const filteredRooms = this.rooms.filter(room => {
+      return room !== roomId
+    })
+
+    this.rooms = filteredRooms
+  }
+
   addToRoom(roomId, user) {
     let room = this.getRoom(roomId);
     if (room) room.members.push(user);
@@ -110,8 +118,13 @@ class RoomHandler {
     });
 
     function handleDiconnect() {
+      const room = this.roomManager.getRoom(roomId)
       this.roomManager.removeFromRoom(roomId, user.id);
       this.io.of("/").in(roomId).emit("user_leave_room", user);
+
+      if(room?.members.length === 0) {
+        this.roomManager.removeRoom(roomId);
+      }
     }
   }
 
