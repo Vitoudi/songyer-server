@@ -6,7 +6,6 @@ class Game {
     this.room = room
     this.timeOut = null;
     this.currentQueueIndex = 0;
-    this.timer = 1 * 60
   }
 
   startGame() {
@@ -26,7 +25,7 @@ class Game {
 
     callback();
 
-    }, 1 * 1000 * 60);
+    }, 2 * 1000 * 60);
   }
 
   clearGameTime() {
@@ -120,7 +119,7 @@ class GameHandler {
   _startRound(roomId) {
       console.log('- - start round called - -')
       //console.log(this.game.currentPlayer)
-      let timer = 1 * 60
+      let timer = 2 * 60
 
       const timerInterval = setInterval(() => {
         timer--;
