@@ -50,7 +50,6 @@ class GameHandler {
     const roomIndex = this.roomManager.getRoomIndex(roomId)
     //console.log('room_id: ' + roomId)
     this.game = new Game(this.roomManager.rooms[roomIndex]);
-    //console.log('room: ' + this.game.room)
 
     this._handleNewCurrentPlayer(roomId);
    
