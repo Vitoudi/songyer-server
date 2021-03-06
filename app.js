@@ -13,7 +13,7 @@ const roomManager = new RoomManager();
 
 const io = require("socket.io")(http, {
   cors: {
-    origins: ["https://example.com", "https://songyer.vercel.app"],
+    origin: "https://songyer.vercel.app",
     methods: ["GET", "POST"],
   },
 });
