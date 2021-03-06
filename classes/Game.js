@@ -48,7 +48,6 @@ class GameHandler {
   handleStartGame({ roomId, user }) {
     console.log('handleStartGameWasCalled')
     const roomIndex = this.roomManager.getRoomIndex(roomId)
-    //console.log('room_id: ' + roomId)
     this.game = new Game(this.roomManager.rooms[roomIndex]);
 
     this._handleNewCurrentPlayer(roomId);
