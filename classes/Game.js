@@ -2,10 +2,11 @@ const { response } = require("express");
 
 class Game {
   constructor(room) {
-    this.hasStarted= false
-    this.room = room
+    this.hasStarted = false;
+    this.room = room;
     this.timeOut = null;
     this.currentQueueIndex = 0;
+    this.timer = 1 * 60;
   }
 
   startGame() {
@@ -13,8 +14,8 @@ class Game {
   }
 
   startGameTime(callback) {
-      this.hasStarted = true
-      //console.log(this.room)
+    this.hasStarted = true;
+    //console.log(this.room)
 
     this.timeOut = setTimeout(() => {
       this.currentQueueIndex++;
@@ -23,8 +24,7 @@ class Game {
         this.currentQueueIndex = 0;
       }
 
-    callback();
-
+      callback();
     }, 2 * 1000 * 60);
   }
 
@@ -46,13 +46,15 @@ class GameHandler {
   }
 
   handleStartGame({ roomId, user }) {
-    console.log('handleStartGameWasCalled')
-    const roomIndex = this.roomManager.getRoomIndex(roomId)
+    console.log("handleStartGameWasCalled");
+    const roomIndex = this.roomManager.getRoomIndex(roomId);
+    //console.log('room_id: ' + roomId)
     this.game = new Game(this.roomManager.rooms[roomIndex]);
+    //console.log('room: ' + this.game.room)
 
     this._handleNewCurrentPlayer(roomId);
-   
-    this._startRound(roomId)
+
+    this._startRound(roomId);
 
     const currentPlayer = this.game.currentPlayer;
 
@@ -61,73 +63,72 @@ class GameHandler {
     }
   }
 
-  handleNewSongCode({roomId, songCode, songTitle}) {
-    const room = this.roomManager.getRoom(roomId)
-    const update = {...room, songTitle, songCode}
-    this.roomManager.updateRoom(roomId, update)
+  handleNewSongCode({ roomId, songCode, songTitle }) {
+    const room = this.roomManager.getRoom(roomId);
+    const update = { ...room, songTitle, songCode };
+    this.roomManager.updateRoom(roomId, update);
 
-    this.io
-      .of("/")
-      .to(roomId)
-      .emit("song_code_arrived", songCode);
-    
-      this.io.of("/").to(roomId).emit("room_changed", update);
+    this.io.of("/").to(roomId).emit("song_code_arrived", songCode);
+
+    this.io.of("/").to(roomId).emit("room_changed", update);
   }
 
-  handleNewGuess({roomId, guess, user}) {
+  handleNewGuess({ roomId, guess, user }) {
     guess = guess.toLowerCase().trim();
-    const room = this.roomManager.getRoom(roomId)
+    const room = this.roomManager.getRoom(roomId);
 
-    if(!room.songTitle) return
+    if (!room.songTitle) return;
     const songTitle = room?.songTitle
       .split("by")[0]
       .toLowerCase()
       .replace(/\([^()]*\)/, "")
-      .trim()
+      .trim();
 
     const responseObj = {
-        status: null,
-        guess,
-        user
-    }
+      status: null,
+      guess,
+      user,
+    };
 
-    if(guess == songTitle) {
-        responseObj.status = 'rigth'
-        this._handleRigthGuess({room, userId: user.id})
-    } else if(songTitle.includes(guess)) {
-        responseObj.status = 'close'
+    if (guess == songTitle) {
+      responseObj.status = "rigth";
+      this._handleRigthGuess({ room, userId: user.id });
+    } else if (songTitle.includes(guess)) {
+      responseObj.status = "close";
     } else {
-        responseObj.status = 'no'
+      responseObj.status = "no";
     }
 
     this.io.of("/").to(roomId).emit("new_guess_arrived", responseObj);
 
-    return responseObj
+    return responseObj;
   }
 
-  _handleRigthGuess({room, userId}) {
-    const currentPlayerId = room?.currentPlayer?.id
-    const guessOwner = this.roomManager.getRoomMember(room.id, userId)
-    const currentPlayer = this.roomManager.getRoomMember(room.id, currentPlayerId)
+  _handleRigthGuess({ room, userId }) {
+    const currentPlayerId = room?.currentPlayer?.id;
+    const guessOwner = this.roomManager.getRoomMember(room.id, userId);
+    const currentPlayer = this.roomManager.getRoomMember(
+      room.id,
+      currentPlayerId
+    );
 
-    currentPlayer.points += 2
-    guessOwner.points++
+    currentPlayer.points += 2;
+    guessOwner.points++;
   }
 
   _startRound(roomId) {
-      console.log('- - start round called - -')
-      //console.log(this.game.currentPlayer)
-      let timer = 2 * 60
+    console.log("- - start round called - -");
+    const room = this.roomManager.getRoom(roomId);
+    if (!room || room?.members === 0) return;
+    //console.log(this.game.currentPlayer)
+    let timer = 2 * 60;
 
-      const timerInterval = setInterval(() => {
-        timer--;
+    const timerInterval = setInterval(() => {
+      timer--;
 
-        this.io
-          .of("/")
-          .to(roomId)
-          .emit("timer_update", timer);
-      }, 1000);
-      
+      this.io.of("/").to(roomId).emit("timer_update", timer);
+    }, 1000);
+
     this.game.startGameTime(() => {
       clearInterval(timerInterval);
       this._handleNewCurrentPlayer(roomId);
@@ -136,22 +137,18 @@ class GameHandler {
   }
 
   _handleUpdateRoomInfo(roomId) {
-      const room = this.roomManager.getRoom(roomId)
-      room.currentPlayer = this.game.currentPlayer
-      room.records.guesses = []
-      room.records.tips = [];
-      room.songCode = ''
+    const room = this.roomManager.getRoom(roomId);
+    if (!room) return;
+    room.currentPlayer = this.game.currentPlayer;
+    room.records.guesses = [];
+    room.records.tips = [];
+    room.songCode = "";
 
-      this.io
-        .of("/")
-        .to(roomId)
-        .emit("room_changed", room)
-
+    this.io.of("/").to(roomId).emit("room_changed", room);
   }
 
-
   _handleNewCurrentPlayer(roomId) {
-      this._handleUpdateRoomInfo(roomId)
+    this._handleUpdateRoomInfo(roomId);
     this.io
       .of("/")
       .to(roomId)
