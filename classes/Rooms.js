@@ -11,7 +11,7 @@ class Room {
       guesses: [],
       tips: [],
     };
-    this.numberOfPlayersThatGotRigth = 0;
+    this.numberOfPlayersThatGotRigth = 0
   }
 }
 
@@ -93,7 +93,7 @@ class RoomManager {
 class RoomHandler {
   constructor({ socket, io }, roomManager, gameManager) {
     this.roomManager = roomManager;
-    this.gameManager = gameManager;
+    this.gameManager = gameManager
     this.socket = socket;
     this.io = io;
   }
@@ -104,6 +104,7 @@ class RoomHandler {
   }
 
   handleRoomEnter({ roomId, user }) {
+
     const roomsId = this.roomManager.rooms.map((room) => room.id);
     this.roomManager.addToRoom(roomId, user);
 
@@ -118,13 +119,13 @@ class RoomHandler {
 
     function handleDiconnect() {
       const room = this.roomManager.getRoom(roomId);
-      const game = this.gameManager.getGame(roomId);
+      const game = this.gameManager.getGame(roomId)
       this.roomManager.removeFromRoom(roomId, user.id);
       this.io.of("/").in(roomId).emit("user_leave_room", user);
 
       if (room?.members.length === 0) {
         this.roomManager.removeRoom(roomId);
-        this.gameManager.removeGame(roomId);
+        this.gameManager.removeGame(roomId)
       }
     }
   }

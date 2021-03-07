@@ -7,12 +7,9 @@ class Requester {
   }
 
   getSong(song) {
-    const formatedSong = song.title.split("by");
-    const title = formatedSong[0];
-    const artist = formatedSong[formatedSong.length - 1].replace(
-      /\([^()]*\)/,
-      ""
-    );
+    const formatedSong = song.title.split('by')
+    const title = formatedSong[0]
+    const artist = formatedSong[formatedSong.length - 1].replace(/\([^()]*\)/, '');
 
     return getSong({
       apiKey: this.secret,
@@ -28,7 +25,8 @@ class Requester {
       title: song,
       artist: artist,
       optimizeQuery: true,
-    });
+    })
+
   }
 }
 
@@ -40,18 +38,19 @@ class RequestHandler {
   }
 
   async handleGetSearchResults(options) {
-    const data = await this.requester.getSearchResults(options);
-    const results = data.slice(0, 5);
-    this.socket.emit("results_arrived", results);
+    const data = await this.requester.getSearchResults(options)
+    const results = data.slice(0, 5)    
+    this.socket.emit('results_arrived', results)
   }
 
   async handleGetSong(song) {
-    try {
-      const result = await this.requester.getSong(song);
-      this.socket.emit("song_data_arrived", result);
-    } catch (err) {
-      console.log(err);
-    }
+      try {
+        const result = await this.requester.getSong(song);
+        this.socket.emit("song_data_arrived", result);
+      } catch(err) {
+          console.log(err)
+      }
+    
   }
 }
 

@@ -15,12 +15,9 @@ class ChatHandler {
 
   handleNewGuess({guess, user, roomId}) {
     const guessData = { guess, user, roomId };
-    console.log(guessData)
-
     const update = this._updateRoom(roomId, 'guesses', guessData)
 
     this._emit(roomId, "room_changed", update);
-      
   }
 
   handleNewTip({roomId, text}) {
@@ -39,7 +36,6 @@ class ChatHandler {
     if (!room) return;
     const chatRecord = room.records[field] || [];
     room.records[field] = [...room.records[field], data];
-    //this.roomManager.updateRoom(roomId, update);
     return room
   }
   

@@ -19,7 +19,7 @@ class Game {
     this.hasStarted = true;
 
     this.timeOut = setTimeout(() => {
-      this._dispatchNewRoundActions();
+      this._dispatchNewRoundActions()
 
       callback();
     }, 2 * 1000 * 60);
@@ -188,7 +188,7 @@ class GameHandler {
 
   _handleNewCurrentPlayer(roomId) {
     const game = this.gameManager.getGame(roomId);
-    if (!game) return;
+    if(!game) return
     this._handleUpdateRoomInfo(roomId);
     this.io.of("/").to(roomId).emit("new_current_player", game.currentPlayer);
   }
